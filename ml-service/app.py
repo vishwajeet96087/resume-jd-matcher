@@ -8,11 +8,20 @@ Usage:
 Endpoint:
     POST /predict
     Body: {"text": "resume content here ..."}
-    Response: {"category": "Java Developer", "confidence": 0.87}
+    Response: {
+        "category": "Java Developer",
+        "confidence": 0.87,
+        "top3": [
+            {"category": "Java Developer", "probability": 0.87},
+            {"category": "Full Stack Developer", "probability": 0.06},
+            {"category": "Python Developer", "probability": 0.03}
+        ]
+    }
 """
 
 import os
 
+import numpy as np
 from flask import Flask, request, jsonify
 from joblib import load
 
@@ -71,13 +80,29 @@ def predict():
     category = pipeline.predict([cleaned])[0]
 
     # predict_proba() returns a 2D array of probabilities for each class.
-    # We take the max probability as the confidence score for the predicted class.
+    # Shape: (1, num_classes) — one row per input text.
     probabilities = pipeline.predict_proba([cleaned])[0]
+
+    # Confidence = probability of the predicted (top-1) class
     confidence = round(float(max(probabilities)), 2)
 
+    # ── Top-3 predictions ───────────────────────────────────────
+    # argsort() returns indices that would sort the array ascending,
+    # so [-3:] picks the 3 largest and [::-1] reverses to descending.
+    classes = pipeline.classes_                     # array of all category names
+    top3_indices = np.argsort(probabilities)[-3:][::-1]
+    top3 = [
+        {
+            "category": classes[i],
+            "probability": round(float(probabilities[i]), 2)
+        }
+        for i in top3_indices
+    ]
+
     return jsonify({
-        "category": category,
-        "confidence": confidence
+        "category": category,        # kept for backward compatibility
+        "confidence": confidence,     # kept for backward compatibility
+        "top3": top3                  # new: three most likely categories
     })
 
 
