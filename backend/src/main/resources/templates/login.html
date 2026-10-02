@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<!--
+  Thymeleaf template for the login page.
+  xmlns:th lets us use th:* attributes that Thymeleaf processes on the server
+  before sending plain HTML to the browser.
+-->
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Login – Resume-JD Matcher</title>
+</head>
+<body>
+
+    <h1>Login</h1>
+
+    <!--
+      Show a success message after registration.
+      th:if="param.registered" checks if the URL has ?registered
+      (set by the redirect in AuthController).
+    -->
+    <p th:if="${param.registered}" style="color: green;">
+        Registration successful! Please log in.
+    </p>
+
+    <!--
+      Show an error message if login failed.
+      Spring Security adds ?error to the URL on bad credentials.
+    -->
+    <p th:if="${param.error}" style="color: red;">
+        Invalid username or password.
+    </p>
+
+    <!-- Show a message after logout -->
+    <p th:if="${param.logout}" style="color: blue;">
+        You have been logged out.
+    </p>
+
+    <!--
+      Spring Security intercepts POST /login automatically.
+      It expects two form fields named "username" and "password".
+      We do NOT write a @PostMapping("/login") — Security handles it.
+    -->
+    <form th:action="@{/login}" method="post">
+        <div>
+            <label for="username">Username:</label><br>
+            <input type="text" id="username" name="username" required>
+        </div>
+        <br>
+        <div>
+            <label for="password">Password:</label><br>
+            <input type="password" id="password" name="password" required>
+        </div>
+        <br>
+        <button type="submit">Log In</button>
+    </form>
+
+    <p>Don't have an account? <a th:href="@{/register}">Register here</a></p>
+
+</body>
+</html>

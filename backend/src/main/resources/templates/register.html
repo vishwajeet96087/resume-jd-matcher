@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Register – Resume-JD Matcher</title>
+</head>
+<body>
+
+    <h1>Register</h1>
+
+    <!--
+      Show an error message if the username is already taken.
+      The "error" attribute is set in AuthController.registerUser().
+    -->
+    <p th:if="${error}" th:text="${error}" style="color: red;"></p>
+
+    <!--
+      POST /register is handled by AuthController.registerUser().
+      th:action="@{/register}" generates a context-aware URL and
+      automatically includes a CSRF token (required by Spring Security).
+    -->
+    <form th:action="@{/register}" method="post">
+        <div>
+            <label for="username">Username:</label><br>
+            <input type="text" id="username" name="username" required minlength="3">
+        </div>
+        <br>
+        <div>
+            <label for="password">Password:</label><br>
+            <input type="password" id="password" name="password" required minlength="4">
+        </div>
+        <br>
+        <button type="submit">Register</button>
+    </form>
+
+    <p>Already have an account? <a th:href="@{/login}">Log in here</a></p>
+
+</body>
+</html>

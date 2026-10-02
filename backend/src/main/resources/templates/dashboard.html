@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<!--
+  Minimal dashboard page — a placeholder that proves login works.
+  xmlns:sec lets us use sec:authorize to show/hide elements by role.
+-->
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard – Resume-JD Matcher</title>
+</head>
+<body>
+
+    <h1>Dashboard</h1>
+    <!-- th:text replaces the tag's content with the model attribute -->
+    <p>Welcome, <span th:text="${username}">user</span>!</p>
+
+    <!--
+      sec:authorize="hasRole('ADMIN')" — this block is rendered ONLY
+      if the logged-in user has ROLE_ADMIN.  Regular users never see it.
+    -->
+    <div sec:authorize="hasRole('ADMIN')">
+        <h3>Admin Panel</h3>
+        <p>You have admin access. You can view all users' data.</p>
+    </div>
+
+    <!--
+      sec:authorize="hasRole('USER')" — visible only to regular users.
+    -->
+    <div sec:authorize="hasRole('USER')">
+        <p>You can manage your own resumes and job descriptions.</p>
+    </div>
+
+    <!-- Logout form: POST /logout is handled by Spring Security -->
+    <form th:action="@{/logout}" method="post">
+        <button type="submit">Log Out</button>
+    </form>
+
+</body>
+</html>
