@@ -1,0 +1,19 @@
+# ── Copy this file to application.properties and fill in your values ──
+#
+# This example is committed to Git so new developers know which
+# environment variables the app needs.  The real application.properties
+# is in .gitignore and never pushed.
+
+# ── Database ─────────────────────────────────────────────
+spring.datasource.url=jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:resume_matcher_db}
+spring.datasource.username=${DB_USERNAME:root}
+spring.datasource.password=${DB_PASSWORD:}
+
+# ── JPA / Hibernate ─────────────────────────────────────
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
+
+# ── File upload limit ───────────────────────────────────
+spring.servlet.multipart.max-file-size=5MB
+spring.servlet.multipart.max-request-size=5MB
