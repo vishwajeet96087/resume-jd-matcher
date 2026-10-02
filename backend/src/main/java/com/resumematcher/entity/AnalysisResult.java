@@ -30,9 +30,11 @@ public class AnalysisResult {
     @JoinColumn(name = "resume_id", nullable = false)
     private Resume resume;
 
-    // Which job description it was matched against
+    // Which job description it was matched against.
+    // Nullable because in "resume-only" mode the user uploads a resume
+    // without a JD, so there is no JobDescription to reference.
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "job_description_id", nullable = false)
+    @JoinColumn(name = "job_description_id", nullable = true)
     private JobDescription jobDescription;
 
     // Percentage of JD keywords found in the resume (0.0 – 100.0)
@@ -51,6 +53,10 @@ public class AnalysisResult {
 
     // ML model's prediction, e.g. "Java Developer", "Data Scientist"
     private String predictedCategory;
+
+    // Set in resume-only mode: the RoleProfile name with the highest match %.
+    // Null when a JD is provided (normal mode uses matchPercentage instead).
+    private String bestFitRole;
 
     // When this analysis was performed
     @Column(nullable = false)
@@ -115,6 +121,14 @@ public class AnalysisResult {
 
     public void setPredictedCategory(String predictedCategory) {
         this.predictedCategory = predictedCategory;
+    }
+
+    public String getBestFitRole() {
+        return bestFitRole;
+    }
+
+    public void setBestFitRole(String bestFitRole) {
+        this.bestFitRole = bestFitRole;
     }
 
     public LocalDateTime getAnalyzedAt() {
