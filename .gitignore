@@ -1,0 +1,22 @@
+# === Java / Spring Boot ===
+target/
+*.iml
+.idea/
+
+# === VS Code ===
+.vscode/
+
+# === Python ===
+__pycache__/
+venv/
+
+# === Environment / secrets ===
+.env
+application.properties
+
+# === ML model artifacts ===
+*.joblib
+*.pkl
+
+# === Uploaded files at runtime ===
+uploaded-files/
