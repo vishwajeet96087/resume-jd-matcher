@@ -17,6 +17,7 @@ application.properties
 # === ML model artifacts ===
 *.joblib
 *.pkl
+ml-service/data/
 
 # === Uploaded files at runtime ===
 uploaded-files/
