@@ -1,60 +1,77 @@
 <!DOCTYPE html>
-<!--
-  Thymeleaf template for the login page.
-  xmlns:th lets us use th:* attributes that Thymeleaf processes on the server
-  before sending plain HTML to the browser.
--->
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login – Resume-JD Matcher</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
 
-    <h1>Login</h1>
+    <!-- 3D Abstract Canvas Background -->
+    <div class="bg-canvas">
+        <div class="blob-1"></div>
+        <div class="blob-2"></div>
+        <div class="blob-3"></div>
+        <div class="sphere-3d sphere-1"></div>
+        <div class="sphere-3d sphere-2"></div>
+        <div class="sphere-3d sphere-3"></div>
+    </div>
 
-    <!--
-      Show a success message after registration.
-      th:if="param.registered" checks if the URL has ?registered
-      (set by the redirect in AuthController).
-    -->
-    <p th:if="${param.registered}" style="color: green;">
-        Registration successful! Please log in.
-    </p>
+    <!-- Centered Auth Glass Card -->
+    <div class="auth-container">
+        <div class="auth-card">
 
-    <!--
-      Show an error message if login failed.
-      Spring Security adds ?error to the URL on bad credentials.
-    -->
-    <p th:if="${param.error}" style="color: red;">
-        Invalid username or password.
-    </p>
+            <!-- Branding -->
+            <div class="auth-brand">
+                <div class="auth-brand-icon">⚡</div>
+                <h1 class="auth-title">Resume-JD Matcher</h1>
+                <p class="auth-subtitle">AI-Powered ATS Matching &amp; Resume Intelligence</p>
+            </div>
 
-    <!-- Show a message after logout -->
-    <p th:if="${param.logout}" style="color: blue;">
-        You have been logged out.
-    </p>
+            <!-- Notifications / Flash Alerts -->
+            <div th:if="${param.registered}" class="alert-box alert-success">
+                <span>✓</span>
+                <span>Registration successful! Please log in with your credentials.</span>
+            </div>
 
-    <!--
-      Spring Security intercepts POST /login automatically.
-      It expects two form fields named "username" and "password".
-      We do NOT write a @PostMapping("/login") — Security handles it.
-    -->
-    <form th:action="@{/login}" method="post">
-        <div>
-            <label for="username">Username:</label><br>
-            <input type="text" id="username" name="username" required>
+            <div th:if="${param.error}" class="alert-box alert-error">
+                <span>⚠️</span>
+                <span>Invalid username or password. Please try again.</span>
+            </div>
+
+            <div th:if="${param.logout}" class="alert-box alert-info">
+                <span>ℹ️</span>
+                <span>You have been safely signed out.</span>
+            </div>
+
+            <!-- Spring Security Login Form -->
+            <form th:action="@{/login}" method="post">
+                <div class="form-group">
+                    <label class="form-label" for="username">Username</label>
+                    <input type="text" id="username" name="username" class="form-input" 
+                           placeholder="Enter your username" required autofocus>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="password">Password</label>
+                    <input type="password" id="password" name="password" class="form-input" 
+                           placeholder="Enter your password" required>
+                </div>
+
+                <button type="submit" class="btn-primary" style="width: 100%; margin-top: 10px; border-radius: var(--radius-md); padding: 14px;">
+                    <span>Sign In to Dashboard</span>
+                    <span>→</span>
+                </button>
+            </form>
+
+            <div class="auth-footer">
+                <span>Don't have an account?</span>
+                <a th:href="@{/register}">Create an Account</a>
+            </div>
+
         </div>
-        <br>
-        <div>
-            <label for="password">Password:</label><br>
-            <input type="password" id="password" name="password" required>
-        </div>
-        <br>
-        <button type="submit">Log In</button>
-    </form>
-
-    <p>Don't have an account? <a th:href="@{/register}">Register here</a></p>
+    </div>
 
 </body>
 </html>

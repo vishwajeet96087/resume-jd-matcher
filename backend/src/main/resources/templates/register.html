@@ -1,39 +1,73 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register – Resume-JD Matcher</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
 
-    <h1>Register</h1>
+    <!-- 3D Abstract Canvas Background -->
+    <div class="bg-canvas">
+        <div class="blob-1"></div>
+        <div class="blob-2"></div>
+        <div class="blob-3"></div>
+        <div class="sphere-3d sphere-1"></div>
+        <div class="sphere-3d sphere-2"></div>
+        <div class="sphere-3d sphere-3"></div>
+    </div>
 
-    <!--
-      Show an error message if the username is already taken.
-      The "error" attribute is set in AuthController.registerUser().
-    -->
-    <p th:if="${error}" th:text="${error}" style="color: red;"></p>
+    <!-- Centered Auth Glass Card -->
+    <div class="auth-container">
+        <div class="auth-card">
 
-    <!--
-      POST /register is handled by AuthController.registerUser().
-      th:action="@{/register}" generates a context-aware URL and
-      automatically includes a CSRF token (required by Spring Security).
-    -->
-    <form th:action="@{/register}" method="post">
-        <div>
-            <label for="username">Username:</label><br>
-            <input type="text" id="username" name="username" required minlength="3">
+            <!-- Branding -->
+            <div class="auth-brand">
+                <div class="auth-brand-icon">⚡</div>
+                <h1 class="auth-title">Create Account</h1>
+                <p class="auth-subtitle">Join the AI-powered ATS resume matching platform</p>
+            </div>
+
+            <!-- Error Banner -->
+            <div th:if="${error}" class="alert-box alert-error">
+                <span>⚠️</span>
+                <span th:text="${error}">Username already taken.</span>
+            </div>
+
+            <!-- Registration Form -->
+            <form th:action="@{/register}" method="post">
+                <div class="form-group">
+                    <label class="form-label" for="username">
+                        <span>Username</span>
+                        <span class="form-label-hint">(Minimum 3 characters)</span>
+                    </label>
+                    <input type="text" id="username" name="username" class="form-input" 
+                           placeholder="Choose a unique username" required minlength="3" autofocus>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="password">
+                        <span>Password</span>
+                        <span class="form-label-hint">(Minimum 4 characters)</span>
+                    </label>
+                    <input type="password" id="password" name="password" class="form-input" 
+                           placeholder="Create a strong password" required minlength="4">
+                </div>
+
+                <button type="submit" class="btn-primary" style="width: 100%; margin-top: 10px; border-radius: var(--radius-md); padding: 14px;">
+                    <span>Create Free Account</span>
+                    <span>→</span>
+                </button>
+            </form>
+
+            <div class="auth-footer">
+                <span>Already have an account?</span>
+                <a th:href="@{/login}">Log in here</a>
+            </div>
+
         </div>
-        <br>
-        <div>
-            <label for="password">Password:</label><br>
-            <input type="password" id="password" name="password" required minlength="4">
-        </div>
-        <br>
-        <button type="submit">Register</button>
-    </form>
-
-    <p>Already have an account? <a th:href="@{/login}">Log in here</a></p>
+    </div>
 
 </body>
 </html>

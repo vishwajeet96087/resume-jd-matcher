@@ -1,48 +1,274 @@
 <!DOCTYPE html>
-<!--
-  Minimal dashboard page — a placeholder that proves login works.
-  xmlns:sec lets us use sec:authorize to show/hide elements by role.
--->
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard – Resume-JD Matcher</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
 
-    <h1>Dashboard</h1>
-    <!-- th:text replaces the tag's content with the model attribute -->
-    <p>Welcome, <span th:text="${username}">user</span>!</p>
-
-    <!--
-      sec:authorize="hasRole('ADMIN')" — this block is rendered ONLY
-      if the logged-in user has ROLE_ADMIN.  Regular users never see it.
-    -->
-    <div sec:authorize="hasRole('ADMIN')">
-        <h3>Admin Panel</h3>
-        <p>You have admin access. You can view all users' data.</p>
+    <!-- 3D Abstract Canvas Background -->
+    <div class="bg-canvas">
+        <div class="blob-1"></div>
+        <div class="blob-2"></div>
+        <div class="blob-3"></div>
+        <div class="sphere-3d sphere-1"></div>
+        <div class="sphere-3d sphere-2"></div>
+        <div class="sphere-3d sphere-3"></div>
     </div>
 
-    <!--
-      sec:authorize="hasRole('USER')" — visible only to regular users.
-    -->
-    <div sec:authorize="hasRole('USER')">
-        <p>You can manage your own resumes and job descriptions.</p>
+    <!-- App Layout -->
+    <div class="app-layout">
+
+        <!-- Left Dark Navy Sidebar -->
+        <aside class="app-sidebar">
+            <div class="sidebar-top">
+                <div class="sidebar-header">
+                    <div class="brand-icon-wrapper">⚡</div>
+                    <div class="brand-details">
+                        <h2>Resume Matcher</h2>
+                        <span class="brand-tag">AI-Powered ATS</span>
+                    </div>
+                </div>
+
+                <nav class="sidebar-nav">
+                    <a th:href="@{/dashboard}" class="nav-link active">
+                        <span class="nav-icon">📊</span>
+                        <span>Dashboard</span>
+                    </a>
+                    <a th:href="@{/analyze}" class="nav-link">
+                        <span class="nav-icon">📄</span>
+                        <span>Analyze Resume</span>
+                    </a>
+                    <a href="#history" class="nav-link" title="Full history available in next update">
+                        <span class="nav-icon">🕒</span>
+                        <span>Analysis History</span>
+                    </a>
+                </nav>
+            </div>
+
+            <!-- Sidebar Bottom Area -->
+            <div class="sidebar-footer">
+                <div class="sidebar-tip-card">
+                    <div class="tip-title">💡 Pro Tip</div>
+                    <p class="tip-text">Tailor your resume skills to match JD requirements to boost keyword overlap by up to 25%.</p>
+                </div>
+
+                <!-- Spring Security Logout Form -->
+                <form th:action="@{/logout}" method="post">
+                    <button type="submit" class="sidebar-logout-btn">
+                        <span>🚪</span>
+                        <span>Sign Out</span>
+                    </button>
+                </form>
+
+                <div class="sidebar-meta">
+                    <span>AI Engine Active</span>
+                    <span class="version-badge">v1.0.0</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="app-main">
+
+            <!-- Top Navigation Bar -->
+            <header class="app-topbar">
+                <div class="topbar-title">
+                    <span>Overview</span>
+                    <span style="color: var(--text-muted); font-size: 13px;">/</span>
+                    <span style="color: var(--blue-500); font-size: 13px; font-weight: 500;">ATS Candidate Hub</span>
+                </div>
+
+                <div class="topbar-right">
+                    <!-- Role Indicator Badges -->
+                    <div sec:authorize="hasRole('ADMIN')">
+                        <span class="role-tag role-tag-admin">🛡️ Administrator</span>
+                    </div>
+                    <div sec:authorize="hasRole('USER')">
+                        <span class="role-tag role-tag-user">👤 Candidate</span>
+                    </div>
+
+                    <div class="user-profile-badge">
+                        <div class="user-avatar" th:text="${#strings.substring(username, 0, 1).toUpperCase()}">U</div>
+                        <div class="user-info-text">
+                            <span class="user-name" th:text="${username}">User</span>
+                            <span class="user-role-label">Logged In</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dashboard Inner Content -->
+            <div class="app-content">
+
+                <!-- 1. Welcome Section -->
+                <section class="welcome-header">
+                    <h1 class="welcome-title">
+                        Welcome back, <span th:text="${username}" style="color: var(--blue-500);">Candidate</span>! 👋
+                    </h1>
+                    <p class="welcome-subtitle">
+                        Analyze your resume with job descriptions and get AI-powered insights to improve your chances of getting hired.
+                    </p>
+                </section>
+
+                <!-- Admin Notice (if admin) -->
+                <div sec:authorize="hasRole('ADMIN')" class="alert-box alert-info" style="margin-bottom: 0;">
+                    <div>
+                        <strong>Admin Access:</strong> You have system-wide privileges to review platform logs and user analytics.
+                    </div>
+                </div>
+
+                <!-- 2. Large Hero Card with 3D Visual Pipeline -->
+                <section class="hero-card">
+                    <div class="hero-content">
+                        <div class="hero-pill">
+                            <span>✨</span>
+                            <span>Powered by TF-IDF &amp; Complement Naive Bayes</span>
+                        </div>
+                        <h2 class="hero-heading">Find Your Best Career Match</h2>
+                        <p class="hero-description">
+                            Upload your resume and compare it with any job description using AI and machine learning. Get detailed keyword analysis, match percentages, and predicted job categories.
+                        </p>
+                        <div style="display: flex; gap: 14px; flex-wrap: wrap; margin-top: 8px;">
+                            <a th:href="@{/analyze}" class="btn-primary">
+                                <span>Analyze Resume Now</span>
+                                <span>→</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- 3D Visual Flow: RESUME -> AI -> JOB DESCRIPTION -->
+                    <div class="hero-visual-pipeline">
+                        <div class="visual-node">
+                            <div class="doc-card-3d">
+                                <div class="doc-header-line"></div>
+                                <div class="doc-body-line"></div>
+                                <div class="doc-body-line short"></div>
+                                <div class="doc-body-line"></div>
+                                <div class="doc-badge-pill">PDF / TXT</div>
+                            </div>
+                            <span class="node-caption">Resume</span>
+                        </div>
+
+                        <div class="flow-connector">➔</div>
+
+                        <div class="visual-node">
+                            <div class="ai-core-3d">
+                                <span class="ai-chip-icon">🧠</span>
+                                <span class="ai-core-label">AI ENGINE</span>
+                            </div>
+                            <span class="node-caption">NLP Matcher</span>
+                        </div>
+
+                        <div class="flow-connector">➔</div>
+
+                        <div class="visual-node">
+                            <div class="doc-card-3d jd-node">
+                                <div class="doc-header-line" style="background: var(--purple-500);"></div>
+                                <div class="doc-body-line"></div>
+                                <div class="doc-body-line"></div>
+                                <div class="doc-body-line short"></div>
+                                <div class="doc-badge-pill" style="color: var(--purple-600); background: rgba(139, 92, 246, 0.12);">TARGET JD</div>
+                            </div>
+                            <span class="node-caption">Job Desc</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 3. Statistics Cards (Safe Default Values) -->
+                <section class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-label">Total Analyses</span>
+                            <div class="stat-icon-wrapper icon-blue">📑</div>
+                        </div>
+                        <div class="stat-value">0</div>
+                        <div class="stat-subtext">
+                            <span style="color: var(--teal-500); font-weight: 600;">+0</span> since last login
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-label">Average Match</span>
+                            <div class="stat-icon-wrapper icon-teal">🎯</div>
+                        </div>
+                        <div class="stat-value">0%</div>
+                        <div class="stat-subtext">
+                            <span>Ready for initial assessment</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-label">Predicted IT Roles</span>
+                            <div class="stat-icon-wrapper icon-purple">🤖</div>
+                        </div>
+                        <div class="stat-value">0</div>
+                        <div class="stat-subtext">
+                            <span>Categories evaluated</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-label">Recently Active</span>
+                            <div class="stat-icon-wrapper icon-amber">⚡</div>
+                        </div>
+                        <div class="stat-value" style="font-size: 15px; font-weight: 700; color: var(--text-secondary); line-height: 1.4;">
+                            Keep analyzing to see stats
+                        </div>
+                        <div class="stat-subtext">
+                            <span>Activity status</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 4. How It Works Section (4 Steps) -->
+                <section class="section-wrapper">
+                    <h2 class="section-title">
+                        <span>🔍</span>
+                        <span>How It Works</span>
+                    </h2>
+
+                    <div class="steps-grid">
+                        <div class="step-card">
+                            <div class="step-number-badge">1</div>
+                            <div class="step-icon-area">📤</div>
+                            <h3 class="step-title">Upload Resume</h3>
+                            <p class="step-desc">Upload your current resume in PDF or TXT format (up to 2MB). Our parser extracts plain text instantly.</p>
+                        </div>
+
+                        <div class="step-card">
+                            <div class="step-number-badge">2</div>
+                            <div class="step-icon-area">📋</div>
+                            <h3 class="step-title">Add Job Description</h3>
+                            <p class="step-desc">Paste the job description from the role you are targeting to capture key technical requirements.</p>
+                        </div>
+
+                        <div class="step-card">
+                            <div class="step-number-badge">3</div>
+                            <div class="step-icon-area">⚙️</div>
+                            <h3 class="step-title">AI Analysis</h3>
+                            <p class="step-desc">Our dual engine analyzes skill overlap and uses Machine Learning to predict the best-fit job classification.</p>
+                        </div>
+
+                        <div class="step-card">
+                            <div class="step-number-badge">4</div>
+                            <div class="step-icon-area">🏆</div>
+                            <h3 class="step-title">Get Results</h3>
+                            <p class="step-desc">Receive an ATS match percentage, detailed matched &amp; missing keywords, and top-3 category probabilities.</p>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </main>
     </div>
-
-    <hr>
-
-    <!-- Main action: navigate to the analysis form -->
-    <h3>Actions</h3>
-    <p><a th:href="@{/analyze}">Analyze Resume vs Job Description</a></p>
-
-    <br>
-
-    <!-- Logout form: POST /logout is handled by Spring Security -->
-    <form th:action="@{/logout}" method="post">
-        <button type="submit">Log Out</button>
-    </form>
 
 </body>
 </html>

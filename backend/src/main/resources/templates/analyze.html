@@ -1,52 +1,165 @@
 <!DOCTYPE html>
-<!--
-  Upload form for resume-vs-JD analysis.
-  enctype="multipart/form-data" is required for file uploads —
-  without it, the browser sends only the file name, not its content.
--->
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Analyze Resume – Resume-JD Matcher</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
 
-    <h1>Analyze Resume vs Job Description</h1>
+    <!-- 3D Abstract Canvas Background -->
+    <div class="bg-canvas">
+        <div class="blob-1"></div>
+        <div class="blob-2"></div>
+        <div class="blob-3"></div>
+        <div class="sphere-3d sphere-1"></div>
+        <div class="sphere-3d sphere-2"></div>
+        <div class="sphere-3d sphere-3"></div>
+    </div>
 
-    <!-- Show error messages from the controller -->
-    <p th:if="${error}" th:text="${error}" style="color: red;"></p>
+    <!-- App Layout -->
+    <div class="app-layout">
 
-    <form th:action="@{/analyze}" method="post" enctype="multipart/form-data">
+        <!-- Left Dark Navy Sidebar -->
+        <aside class="app-sidebar">
+            <div class="sidebar-top">
+                <div class="sidebar-header">
+                    <div class="brand-icon-wrapper">⚡</div>
+                    <div class="brand-details">
+                        <h2>Resume Matcher</h2>
+                        <span class="brand-tag">AI-Powered ATS</span>
+                    </div>
+                </div>
 
-        <!-- Resume file upload -->
-        <div>
-            <label for="resumeFile"><strong>Upload Resume (PDF or TXT, max 2 MB):</strong></label><br>
-            <input type="file" id="resumeFile" name="resumeFile" accept=".pdf,.txt" required>
-        </div>
-        <br>
+                <nav class="sidebar-nav">
+                    <a th:href="@{/dashboard}" class="nav-link">
+                        <span class="nav-icon">📊</span>
+                        <span>Dashboard</span>
+                    </a>
+                    <a th:href="@{/analyze}" class="nav-link active">
+                        <span class="nav-icon">📄</span>
+                        <span>Analyze Resume</span>
+                    </a>
+                    <a th:href="@{/dashboard}" class="nav-link">
+                        <span class="nav-icon">🕒</span>
+                        <span>Analysis History</span>
+                    </a>
+                </nav>
+            </div>
 
-        <!-- Optional job title -->
-        <div>
-            <label for="jobTitle"><strong>Job Title (optional):</strong></label><br>
-            <input type="text" id="jobTitle" name="jobTitle"
-                   placeholder="e.g. Java Backend Developer" size="50">
-        </div>
-        <br>
+            <div class="sidebar-footer">
+                <div class="sidebar-tip-card">
+                    <div class="tip-title">💡 Form Guidance</div>
+                    <p class="tip-text">Ensure your uploaded PDF contains selectable text. Scanned images without OCR will produce empty results.</p>
+                </div>
 
-        <!-- Job description text -->
-        <div>
-            <label for="jobDescription"><strong>Job Description:</strong></label><br>
-            <textarea id="jobDescription" name="jobDescription"
-                      rows="12" cols="80" required
-                      placeholder="Paste the full job description here..."></textarea>
-        </div>
-        <br>
+                <form th:action="@{/logout}" method="post">
+                    <button type="submit" class="sidebar-logout-btn">
+                        <span>🚪</span>
+                        <span>Sign Out</span>
+                    </button>
+                </form>
 
-        <button type="submit">Analyze</button>
-    </form>
+                <div class="sidebar-meta">
+                    <span>ATS Matching Engine</span>
+                    <span class="version-badge">v1.0.0</span>
+                </div>
+            </div>
+        </aside>
 
-    <br>
-    <a th:href="@{/dashboard}">Back to Dashboard</a>
+        <!-- Main Content Area -->
+        <main class="app-main">
+
+            <!-- Topbar -->
+            <header class="app-topbar">
+                <div class="topbar-title">
+                    <a th:href="@{/dashboard}" style="color: var(--text-muted);">Dashboard</a>
+                    <span style="color: var(--text-muted); font-size: 13px;">/</span>
+                    <span style="color: var(--blue-500); font-weight: 600;">Run Analysis</span>
+                </div>
+
+                <div class="topbar-right">
+                    <a th:href="@{/dashboard}" class="btn-secondary" style="padding: 8px 18px; font-size: 13px;">
+                        <span>← Back to Dashboard</span>
+                    </a>
+                </div>
+            </header>
+
+            <div class="app-content">
+
+                <!-- Header Title -->
+                <div class="welcome-header">
+                    <h1 class="welcome-title">Analyze Resume vs. Job Description</h1>
+                    <p class="welcome-subtitle">
+                        Upload your candidate resume, provide the job description, and let our AI engine compute the ATS match score and role classification.
+                    </p>
+                </div>
+
+                <!-- Error Alert Box -->
+                <div th:if="${error}" class="alert-box alert-error">
+                    <span>⚠️</span>
+                    <span th:text="${error}">An error occurred.</span>
+                </div>
+
+                <!-- Glassmorphism Form Card -->
+                <div class="glass-panel">
+                    <form th:action="@{/analyze}" method="post" enctype="multipart/form-data">
+
+                        <!-- 1. Resume File Upload -->
+                        <div class="form-group">
+                            <label class="form-label" for="resumeFile">
+                                <span>Resume Document</span>
+                                <span class="form-label-hint">(PDF or TXT, max 2 MB)</span>
+                            </label>
+
+                            <div class="file-dropzone-wrapper">
+                                <div class="dropzone-icon">📁</div>
+                                <div class="dropzone-text">Choose your resume file or drag &amp; drop here</div>
+                                <div class="dropzone-subtext">Supported formats: text-based PDF or plain UTF-8 TXT</div>
+                                <input type="file" id="resumeFile" name="resumeFile" accept=".pdf,.txt" class="file-native-input" required>
+                            </div>
+                        </div>
+
+                        <!-- 2. Job Title (Optional) -->
+                        <div class="form-group">
+                            <label class="form-label" for="jobTitle">
+                                <span>Target Job Title</span>
+                                <span class="form-label-hint">(Optional — for reference)</span>
+                            </label>
+                            <input type="text" id="jobTitle" name="jobTitle" class="form-input"
+                                   placeholder="e.g. Senior Java Backend Developer">
+                        </div>
+
+                        <!-- 3. Job Description -->
+                        <div class="form-group">
+                            <label class="form-label" for="jobDescription">
+                                <span>Job Description (JD)</span>
+                                <span class="form-label-hint">(Paste the complete responsibilities and skill requirements)</span>
+                            </label>
+                            <textarea id="jobDescription" name="jobDescription" rows="12" class="form-textarea" required
+                                      placeholder="Paste the full job description here (e.g. key responsibilities, required programming languages, tools, frameworks)..."></textarea>
+                        </div>
+
+                        <!-- Submit Button & Action Links -->
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 30px; flex-wrap: wrap; gap: 16px;">
+                            <button type="submit" class="btn-primary" style="padding: 16px 36px; font-size: 16px;">
+                                <span>🚀 Run AI Analysis</span>
+                            </button>
+
+                            <a th:href="@{/dashboard}" class="btn-secondary">
+                                Cancel
+                            </a>
+                        </div>
+
+                    </form>
+                </div>
+
+            </div>
+        </main>
+    </div>
 
 </body>
 </html>

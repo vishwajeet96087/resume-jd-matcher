@@ -1,104 +1,278 @@
 <!DOCTYPE html>
-<!--
-  Displays the analysis results after resume-vs-JD comparison.
-  Data comes from the AnalysisController via the Thymeleaf Model.
--->
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Analysis Result – Resume-JD Matcher</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
 
-    <h1>Analysis Result</h1>
-
-    <!-- Resume file name -->
-    <p><strong>Resume:</strong> <span th:text="${resumeFileName}">resume.pdf</span></p>
-
-    <hr>
-
-    <!-- ── Keyword Match Section ─────────────────────────────── -->
-    <h2>Keyword Match</h2>
-
-    <p>
-        <strong>Match Percentage:</strong>
-        <span th:text="${result.matchPercentage} + '%'">0%</span>
-    </p>
-
-    <p>
-        <strong>Matched Keywords:</strong><br>
-        <span th:text="${result.matchedKeywords}" style="color: green;">none</span>
-    </p>
-
-    <p>
-        <strong>Missing Keywords:</strong><br>
-        <span th:text="${result.missingKeywords}" style="color: red;">none</span>
-    </p>
-
-    <hr>
-
-    <!-- ── ML Prediction Section ─────────────────────────────── -->
-    <h2>ML Predicted Category</h2>
-
-    <p>
-        <strong>Category:</strong>
-        <span th:text="${result.predictedCategory}">Unknown</span>
-    </p>
-
-    <p>
-        <strong>Confidence:</strong>
-        <!--
-          confidence is passed via Model (not from the entity)
-          because AnalysisResult does not have a confidence column.
-        -->
-        <span th:text="${confidence}">0.0</span>
-    </p>
-
-    <!-- ── Top 3 Predictions ─────────────────────────────────── -->
-    <!--
-      th:if="${not #lists.isEmpty(top3)}" only renders this block
-      when the ML service returned results (not when it was unavailable).
-    -->
-    <div th:if="${not #lists.isEmpty(top3)}">
-        <h3>Top 3 Predictions</h3>
-        <table border="1" cellpadding="5" cellspacing="0">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Category</th>
-                    <th>Probability</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!--
-                  th:each iterates over the top3 list.
-                  iterStat.count gives 1-based index.
-                -->
-                <tr th:each="entry, iterStat : ${top3}">
-                    <td th:text="${iterStat.count}">1</td>
-                    <td th:text="${entry.category}">Category</td>
-                    <td th:text="${entry.probability}">0.0</td>
-                </tr>
-            </tbody>
-        </table>
+    <!-- 3D Abstract Canvas Background -->
+    <div class="bg-canvas">
+        <div class="blob-1"></div>
+        <div class="blob-2"></div>
+        <div class="blob-3"></div>
+        <div class="sphere-3d sphere-1"></div>
+        <div class="sphere-3d sphere-2"></div>
+        <div class="sphere-3d sphere-3"></div>
     </div>
 
-    <!-- Show a note when ML service was unavailable -->
-    <p th:if="${result.predictedCategory == 'Unavailable'}" style="color: orange;">
-        Note: The ML service was unavailable. Start Flask and try again for a prediction.
-    </p>
+    <!-- App Layout -->
+    <div class="app-layout">
 
-    <hr>
+        <!-- Left Dark Navy Sidebar -->
+        <aside class="app-sidebar">
+            <div class="sidebar-top">
+                <div class="sidebar-header">
+                    <div class="brand-icon-wrapper">⚡</div>
+                    <div class="brand-details">
+                        <h2>Resume Matcher</h2>
+                        <span class="brand-tag">AI-Powered ATS</span>
+                    </div>
+                </div>
 
-    <p>
-        <strong>Analyzed at:</strong>
-        <span th:text="${result.analyzedAt}">now</span>
-    </p>
+                <nav class="sidebar-nav">
+                    <a th:href="@{/dashboard}" class="nav-link">
+                        <span class="nav-icon">📊</span>
+                        <span>Dashboard</span>
+                    </a>
+                    <a th:href="@{/analyze}" class="nav-link active">
+                        <span class="nav-icon">📄</span>
+                        <span>Analyze Resume</span>
+                    </a>
+                    <a th:href="@{/dashboard}" class="nav-link">
+                        <span class="nav-icon">🕒</span>
+                        <span>Analysis History</span>
+                    </a>
+                </nav>
+            </div>
 
-    <br>
-    <a th:href="@{/analyze}">Run Another Analysis</a>
-    &nbsp;|&nbsp;
-    <a th:href="@{/dashboard}">Back to Dashboard</a>
+            <div class="sidebar-footer">
+                <div class="sidebar-tip-card">
+                    <div class="tip-title">📈 ATS Optimization</div>
+                    <p class="tip-text">Add the highlighted missing keywords directly into your skills and project bullet points.</p>
+                </div>
+
+                <form th:action="@{/logout}" method="post">
+                    <button type="submit" class="sidebar-logout-btn">
+                        <span>🚪</span>
+                        <span>Sign Out</span>
+                    </button>
+                </form>
+
+                <div class="sidebar-meta">
+                    <span>Analysis Complete</span>
+                    <span class="version-badge">v1.0.0</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="app-main">
+
+            <!-- Topbar -->
+            <header class="app-topbar">
+                <div class="topbar-title">
+                    <a th:href="@{/dashboard}" style="color: var(--text-muted);">Dashboard</a>
+                    <span style="color: var(--text-muted); font-size: 13px;">/</span>
+                    <span style="color: var(--blue-500); font-weight: 600;">Analysis Result</span>
+                </div>
+
+                <div class="topbar-right">
+                    <a th:href="@{/analyze}" class="btn-primary" style="padding: 10px 22px; font-size: 13px;">
+                        <span>+ New Analysis</span>
+                    </a>
+                    <a th:href="@{/dashboard}" class="btn-secondary" style="padding: 10px 20px; font-size: 13px;">
+                        <span>Dashboard</span>
+                    </a>
+                </div>
+            </header>
+
+            <div class="app-content">
+
+                <!-- Result Header Banner -->
+                <div class="result-header-panel">
+                    <div class="result-resume-info">
+                        <div class="resume-icon-badge">📑</div>
+                        <div>
+                            <div class="resume-meta-title" th:text="${resumeFileName}">resume.pdf</div>
+                            <div class="resume-meta-sub">
+                                Analyzed on: <span th:text="${result.analyzedAt}">Timestamp</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 12px;">
+                        <a th:href="@{/analyze}" class="btn-secondary" style="font-size: 13px;">
+                            🔄 Run Another Analysis
+                        </a>
+                        <a th:href="@{/dashboard}" class="btn-secondary" style="font-size: 13px;">
+                            🏠 Back to Dashboard
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Fallback Warning If ML Service Unavailable -->
+                <div th:if="${result.predictedCategory == 'Unavailable'}" class="alert-box alert-warning">
+                    <span>⚠️</span>
+                    <span>Note: The ML microservice was temporarily unavailable during this request. Keyword matching succeeded, but machine learning category classification was skipped.</span>
+                </div>
+
+                <!-- Overview Grid: Score Gauge & ML Prediction Card -->
+                <div class="result-grid-overview">
+
+                    <!-- 1. Circular Match Percentage Gauge -->
+                    <div class="score-gauge-card">
+                        <span class="hero-pill" style="margin-bottom: 8px;">🎯 Match Score</span>
+                        
+                        <div class="score-circular-ring">
+                            <div class="score-inner-circle">
+                                <div>
+                                    <span class="score-large-number" th:text="${result.matchPercentage}">0</span>
+                                    <span class="score-label-percent">%</span>
+                                </div>
+                                <span class="score-caption">ATS Match</span>
+                            </div>
+                        </div>
+
+                        <p style="font-size: 13px; color: var(--text-secondary); max-width: 260px; margin-top: 4px;">
+                            Percentage of job description keywords successfully identified in your resume.
+                        </p>
+                    </div>
+
+                    <!-- 2. ML Predicted Category Showcase -->
+                    <div class="ml-showcase-card">
+                        <div>
+                            <div class="ml-badge-label">
+                                <span>🤖</span>
+                                <span>AI Classification</span>
+                            </div>
+
+                            <div style="margin-top: 14px;">
+                                <span style="font-size: 12px; color: var(--text-white-muted); text-transform: uppercase; letter-spacing: 0.8px;">Predicted Job Role</span>
+                                <h2 class="ml-category-heading" th:text="${result.predictedCategory}">INFORMATION-TECHNOLOGY</h2>
+                            </div>
+                        </div>
+
+                        <div class="ml-confidence-bar-wrapper">
+                            <div class="ml-confidence-header">
+                                <span>Model Confidence</span>
+                                <span style="color: var(--cyan-400); font-weight: 700;" th:text="${confidence}">0.85</span>
+                            </div>
+                            <div class="confidence-progress-track">
+                                <div class="confidence-progress-fill" th:style="'width: ' + (${confidence} * 100) + '%;'"></div>
+                            </div>
+                            <span style="font-size: 11px; color: rgba(255, 255, 255, 0.5);">Calculated via Multinomial/Complement Naive Bayes probabilities</span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Keywords Breakdown Grid (Matched vs Missing) -->
+                <div class="keywords-split-grid">
+
+                    <!-- Matched Keywords Panel (Green / Teal) -->
+                    <div class="keyword-panel">
+                        <div class="keyword-panel-header" style="color: var(--teal-500);">
+                            <span>✅</span>
+                            <span>Matched Keywords (In Both Resume &amp; JD)</span>
+                        </div>
+
+                        <!-- Render as comma-split badges if keywords exist -->
+                        <div th:if="${result.matchedKeywords != null and not #strings.isEmpty(result.matchedKeywords)}" class="keyword-badges-list">
+                            <span th:each="kw : ${#strings.arraySplit(result.matchedKeywords, ', ')}" 
+                                  class="keyword-badge keyword-badge-matched">
+                                <span>✓</span>
+                                <span th:text="${kw}">keyword</span>
+                            </span>
+                        </div>
+
+                        <!-- Fallback if empty -->
+                        <div th:if="${result.matchedKeywords == null or #strings.isEmpty(result.matchedKeywords)}" class="empty-keywords-hint">
+                            No matching keywords identified between resume and job description.
+                        </div>
+                    </div>
+
+                    <!-- Missing Keywords Panel (Red / Rose) -->
+                    <div class="keyword-panel">
+                        <div class="keyword-panel-header" style="color: var(--danger-text);">
+                            <span>❌</span>
+                            <span>Missing Keywords (Required in JD, Not in Resume)</span>
+                        </div>
+
+                        <!-- Render as comma-split badges if missing keywords exist -->
+                        <div th:if="${result.missingKeywords != null and not #strings.isEmpty(result.missingKeywords)}" class="keyword-badges-list">
+                            <span th:each="kw : ${#strings.arraySplit(result.missingKeywords, ', ')}" 
+                                  class="keyword-badge keyword-badge-missing">
+                                <span>+</span>
+                                <span th:text="${kw}">missing_keyword</span>
+                            </span>
+                        </div>
+
+                        <!-- Fallback if empty -->
+                        <div th:if="${result.missingKeywords == null or #strings.isEmpty(result.missingKeywords)}" class="empty-keywords-hint">
+                            Great job! No significant missing keywords detected.
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Top 3 Predictions Table (if ML returned predictions) -->
+                <div th:if="${not #lists.isEmpty(top3)}" class="top3-table-wrapper">
+                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                        <h3 style="font-size: 17px; font-weight: 700; color: var(--navy-950);">
+                            🎯 Top 3 Predicted Job Categories
+                        </h3>
+                        <span class="role-tag role-tag-user">Probability Distribution</span>
+                    </div>
+
+                    <table class="modern-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 70px;">Rank</th>
+                                <th>Category</th>
+                                <th style="width: 240px;">Probability</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="entry, iterStat : ${top3}">
+                                <td>
+                                    <span class="rank-badge" th:text="${iterStat.count}">1</span>
+                                </td>
+                                <td>
+                                    <span class="table-category-cell" th:text="${entry.category}">Category Name</span>
+                                </td>
+                                <td>
+                                    <div class="table-prob-wrapper">
+                                        <div class="table-prob-bar">
+                                            <div class="table-prob-fill" th:style="'width: ' + (${entry.probability} * 100) + '%;'"></div>
+                                        </div>
+                                        <span style="font-weight: 700; font-size: 13px; color: var(--navy-900);" 
+                                              th:text="${entry.probability}">0.85</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Bottom Navigation Actions -->
+                <div style="display: flex; gap: 14px; margin-top: 10px;">
+                    <a th:href="@{/analyze}" class="btn-primary">
+                        <span>Run Another Analysis</span>
+                        <span>→</span>
+                    </a>
+                    <a th:href="@{/dashboard}" class="btn-secondary">
+                        Back to Dashboard
+                    </a>
+                </div>
+
+            </div>
+        </main>
+    </div>
 
 </body>
 </html>
