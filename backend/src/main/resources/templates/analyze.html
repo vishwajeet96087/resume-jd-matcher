@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<!--
+  Upload form for resume-vs-JD analysis.
+  enctype="multipart/form-data" is required for file uploads —
+  without it, the browser sends only the file name, not its content.
+-->
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Analyze Resume – Resume-JD Matcher</title>
+</head>
+<body>
+
+    <h1>Analyze Resume vs Job Description</h1>
+
+    <!-- Show error messages from the controller -->
+    <p th:if="${error}" th:text="${error}" style="color: red;"></p>
+
+    <form th:action="@{/analyze}" method="post" enctype="multipart/form-data">
+
+        <!-- Resume file upload -->
+        <div>
+            <label for="resumeFile"><strong>Upload Resume (PDF or TXT, max 2 MB):</strong></label><br>
+            <input type="file" id="resumeFile" name="resumeFile" accept=".pdf,.txt" required>
+        </div>
+        <br>
+
+        <!-- Optional job title -->
+        <div>
+            <label for="jobTitle"><strong>Job Title (optional):</strong></label><br>
+            <input type="text" id="jobTitle" name="jobTitle"
+                   placeholder="e.g. Java Backend Developer" size="50">
+        </div>
+        <br>
+
+        <!-- Job description text -->
+        <div>
+            <label for="jobDescription"><strong>Job Description:</strong></label><br>
+            <textarea id="jobDescription" name="jobDescription"
+                      rows="12" cols="80" required
+                      placeholder="Paste the full job description here..."></textarea>
+        </div>
+        <br>
+
+        <button type="submit">Analyze</button>
+    </form>
+
+    <br>
+    <a th:href="@{/dashboard}">Back to Dashboard</a>
+
+</body>
+</html>

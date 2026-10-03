@@ -20,7 +20,7 @@
     <description>Spring Boot backend for Resume-JD Matcher</description>
 
     <properties>
-        <java.version>17</java.version> <!-- enforces Java 17 compilation -->
+        <java.version>19</java.version> <!-- enforces Java 19 compilation -->
     </properties>
 
     <dependencies>

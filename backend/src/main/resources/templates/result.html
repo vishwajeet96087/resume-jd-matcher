@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<!--
+  Displays the analysis results after resume-vs-JD comparison.
+  Data comes from the AnalysisController via the Thymeleaf Model.
+-->
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Analysis Result – Resume-JD Matcher</title>
+</head>
+<body>
+
+    <h1>Analysis Result</h1>
+
+    <!-- Resume file name -->
+    <p><strong>Resume:</strong> <span th:text="${resumeFileName}">resume.pdf</span></p>
+
+    <hr>
+
+    <!-- ── Keyword Match Section ─────────────────────────────── -->
+    <h2>Keyword Match</h2>
+
+    <p>
+        <strong>Match Percentage:</strong>
+        <span th:text="${result.matchPercentage} + '%'">0%</span>
+    </p>
+
+    <p>
+        <strong>Matched Keywords:</strong><br>
+        <span th:text="${result.matchedKeywords}" style="color: green;">none</span>
+    </p>
+
+    <p>
+        <strong>Missing Keywords:</strong><br>
+        <span th:text="${result.missingKeywords}" style="color: red;">none</span>
+    </p>
+
+    <hr>
+
+    <!-- ── ML Prediction Section ─────────────────────────────── -->
+    <h2>ML Predicted Category</h2>
+
+    <p>
+        <strong>Category:</strong>
+        <span th:text="${result.predictedCategory}">Unknown</span>
+    </p>
+
+    <p>
+        <strong>Confidence:</strong>
+        <!--
+          confidence is passed via Model (not from the entity)
+          because AnalysisResult does not have a confidence column.
+        -->
+        <span th:text="${confidence}">0.0</span>
+    </p>
+
+    <!-- ── Top 3 Predictions ─────────────────────────────────── -->
+    <!--
+      th:if="${not #lists.isEmpty(top3)}" only renders this block
+      when the ML service returned results (not when it was unavailable).
+    -->
+    <div th:if="${not #lists.isEmpty(top3)}">
+        <h3>Top 3 Predictions</h3>
+        <table border="1" cellpadding="5" cellspacing="0">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Category</th>
+                    <th>Probability</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!--
+                  th:each iterates over the top3 list.
+                  iterStat.count gives 1-based index.
+                -->
+                <tr th:each="entry, iterStat : ${top3}">
+                    <td th:text="${iterStat.count}">1</td>
+                    <td th:text="${entry.category}">Category</td>
+                    <td th:text="${entry.probability}">0.0</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Show a note when ML service was unavailable -->
+    <p th:if="${result.predictedCategory == 'Unavailable'}" style="color: orange;">
+        Note: The ML service was unavailable. Start Flask and try again for a prediction.
+    </p>
+
+    <hr>
+
+    <p>
+        <strong>Analyzed at:</strong>
+        <span th:text="${result.analyzedAt}">now</span>
+    </p>
+
+    <br>
+    <a th:href="@{/analyze}">Run Another Analysis</a>
+    &nbsp;|&nbsp;
+    <a th:href="@{/dashboard}">Back to Dashboard</a>
+
+</body>
+</html>

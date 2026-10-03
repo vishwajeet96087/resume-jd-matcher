@@ -31,6 +31,14 @@
         <p>You can manage your own resumes and job descriptions.</p>
     </div>
 
+    <hr>
+
+    <!-- Main action: navigate to the analysis form -->
+    <h3>Actions</h3>
+    <p><a th:href="@{/analyze}">Analyze Resume vs Job Description</a></p>
+
+    <br>
+
     <!-- Logout form: POST /logout is handled by Spring Security -->
     <form th:action="@{/logout}" method="post">
         <button type="submit">Log Out</button>

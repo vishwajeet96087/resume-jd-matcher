@@ -167,22 +167,31 @@ def main():
     print(f"Model saved to {model_path} ({best_nb_name})")
 
     # ── 11. Sanity check with hardcoded samples ─────────────────────
+    # Print the categories the model was trained on so it's clear
+    # which labels it can predict.
+    print("\nDataset categories:")
+    for cat in sorted(pipeline.classes_):
+        print(f"  - {cat}")
+
     # These are short, obvious texts to verify the model isn't broken.
+    # "Expected" is the dataset category we hope the model predicts.
+    # Accountant and Chef are NOT dataset categories, so they test
+    # how the model handles out-of-domain input.
     samples = [
         (
-            "Java Developer",
-            "Experienced Java developer with expertise in Spring Boot, "
+            "INFORMATION-TECHNOLOGY",
+            "Experienced software developer with expertise in Spring Boot, "
             "Hibernate, REST APIs, microservices architecture, Maven, "
             "and MySQL. Built scalable backend systems for e-commerce."
         ),
         (
-            "Accountant",
+            "ACCOUNTANT",
             "Certified public accountant skilled in financial reporting, "
             "tax preparation, auditing, bookkeeping, accounts payable "
             "and receivable, and regulatory compliance using SAP."
         ),
         (
-            "Chef",
+            "CHEF",
             "Professional chef with 8 years of experience in menu planning, "
             "food preparation, kitchen management, catering services, "
             "food safety compliance, and team supervision."
@@ -190,13 +199,13 @@ def main():
     ]
 
     print("\nSanity Check:")
-    print(f"  {'Expected':<20} {'Predicted':<20}")
-    print("  " + "-" * 40)
+    print(f"  {'Expected':<25} {'Predicted':<25}")
+    print("  " + "-" * 50)
     for expected, text in samples:
         cleaned = clean_text(text)
         predicted = pipeline.predict([cleaned])[0]
-        match = "✓" if expected.lower() in predicted.lower() else "✗"
-        print(f"  {expected:<20} {predicted:<20} {match}")
+        match = "YES" if expected.upper() == predicted.upper() else "NO"
+        print(f"  {expected:<25} {predicted:<25} {match}")
 
 
 if __name__ == "__main__":
